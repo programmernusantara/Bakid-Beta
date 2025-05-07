@@ -25,6 +25,7 @@ class DashboardPageState extends State<DashboardPage>
   final Color _buttonColor = Colors.white;
   final Color _iconColor = Colors.blueAccent;
   final double _iconSize = 20.0;
+  final double _buttonSpacing = 6.0; // Reduced from 12 to 6
 
   final List<Map<String, dynamic>> _menuItems = [
     {'icon': Icons.announcement, 'label': 'Pengumuman'},
@@ -82,7 +83,9 @@ class DashboardPageState extends State<DashboardPage>
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
+          margin: EdgeInsets.only(
+            bottom: _buttonSpacing,
+          ), // Use reduced spacing
           child: FloatingActionButton(
             mini: true,
             heroTag: 'menu_$index',
@@ -128,6 +131,7 @@ class DashboardPageState extends State<DashboardPage>
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           if (_isMenuOpen)
             ...List.generate(_menuItems.length, _buildMenuButton),

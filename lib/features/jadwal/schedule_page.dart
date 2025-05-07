@@ -86,19 +86,19 @@ class _SchedulePageState extends State<SchedulePage> {
             label: 'Pelajaran',
             value: jadwal['pelajaran'],
           ),
-          const SizedBox(height: 12),
+          const Divider(),
           _buildRow(
             icon: LucideIcons.users,
             label: 'Kelas',
             value: jadwal['kelas'],
           ),
-          const SizedBox(height: 12),
+          const Divider(),
           _buildRow(
             icon: LucideIcons.calendar,
             label: 'Hari',
             value: jadwal['hari'],
           ),
-          const SizedBox(height: 12),
+          const Divider(),
           _buildRow(
             icon: LucideIcons.clock,
             label: 'Jam',

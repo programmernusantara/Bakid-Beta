@@ -1,5 +1,7 @@
+import 'package:bakid/features/auth/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bakid/core/services/supabase_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   final String userId;
@@ -30,16 +32,45 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _logout() async {
+    try {
+      // Clear Supabase session
+      await SupabaseService.client.auth.signOut();
+
+      // Clear local storage
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('userId');
+
+      // Navigate to login page
+      if (mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+          (route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal logout: $e'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Latar belakang putih
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Profil', style: TextStyle(color: Colors.black)),
         centerTitle: true,
-        backgroundColor: Colors.grey[100], // Navbar putih
+        backgroundColor: Colors.grey[100],
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.blue), // Ikon biru
+        iconTheme: const IconThemeData(color: Colors.blue),
       ),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: _profileFuture,
@@ -90,6 +121,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           const SizedBox(height: 24),
           _buildProfileCard(data),
+          const SizedBox(height: 20),
+          _buildLogoutButton(),
         ],
       ),
     );
@@ -98,7 +131,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildProfileCard(Map<String, dynamic> data) {
     return Card(
       elevation: 2,
-      color: Colors.grey[100], // Card abu muda
+      color: Colors.grey[100],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -121,13 +154,79 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Widget _buildLogoutButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.logout, size: 40, color: Colors.red),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Keluar dari akun?',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Anda perlu login kembali untuk mengakses aplikasi',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Batal'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _logout();
+                      },
+                      child: const Text(
+                        'Keluar',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ],
+                  actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                ),
+          );
+        },
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.red,
+          side: const BorderSide(color: Colors.red),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 14),
+        ),
+        child: const Text('Keluar'),
+      ),
+    );
+  }
+
   Widget _buildInfoRow(String label, String value, IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Colors.blue), // Ikon sesuai dengan data
+          Icon(icon, color: Colors.blue),
           const SizedBox(width: 8),
           Expanded(
             flex: 3,
