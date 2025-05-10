@@ -1,6 +1,6 @@
+import 'package:bakid/features/absensi/attendance_page.dart';
 import 'package:bakid/features/jurnal/jurnal_page.dart';
 import 'package:flutter/material.dart';
-import 'package:bakid/features/absensi/attendance_page.dart';
 import 'package:bakid/features/pengumuman/pengumuman_page.dart';
 import 'package:bakid/features/perizinan/izin_asatid_page.dart';
 import 'package:bakid/features/jadwal/schedule_page.dart';
@@ -38,7 +38,7 @@ class DashboardPageState extends State<DashboardPage>
 
   late final List<Widget> _pages = [
     PengumumanPage(),
-    AttendancePage(userId: widget.userId),
+    AbsensiAsatidPage(),
     JurnalPage(),
     const AizinAsatidPage(),
     SchedulePage(userId: widget.userId),
